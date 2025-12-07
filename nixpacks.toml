@@ -2,9 +2,15 @@
 nixPkgs = ["nodejs_20", "ffmpeg", "git"]
 
 [phases.install]
-# Aqui está o segredo: instalamos o npm E copiamos o arquivo que falta
-cmds = ["npm install", "cp modelo-env.yml env.yml"]
+# 1. Copia o modelo
+# 2. Troca 'localhost' por 'evolution-api-redis' nas configs do Redis
+# 3. Troca a senha padrao pela sua senha do Redis
+cmds = [
+    "npm install",
+    "cp modelo-env.yml env.yml",
+    "sed -i 's/host: localhost/host: evolution-api-redis/g' env.yml",
+    "sed -i 's/password: null/password: e2f8f84532ba2a14ac0d/g' env.yml"
+]
 
 [start]
-# Voltamos para o comando original para o site rodar
 cmd = "npm run start"

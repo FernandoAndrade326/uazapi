@@ -2,19 +2,24 @@
 nixPkgs = ["nodejs_20", "ffmpeg", "git"]
 
 [phases.install]
-# O comando abaixo faz:
-# 1. Instala dependências
-# 2. Copia o modelo de configuração
-# 3. Arruma o host do Redis (troca 127.0.0.1 ou localhost pelo nome do serviço)
-# 4. INSERE A SENHA: Troca o link simples pelo link com a senha que você me passou
 cmds = [
     "npm install",
     "cp modelo-env.yml env.yml",
+    
+    # 1. Configura o Redis e a Senha (MANTIDO)
     "sed -i 's/127.0.0.1/evolution-api-redis/g' env.yml",
     "sed -i 's/localhost/evolution-api-redis/g' env.yml",
-    "sed -i 's|redis://evolution-api-redis:6379|redis://default:e2f8f84532ba2a14ac0d@evolution-api-redis:6379|g' env.yml"
+    "sed -i 's|redis://evolution-api-redis:6379|redis://default:e2f8f84532ba2a14ac0d@evolution-api-redis:6379|g' env.yml",
+    
+    # 2. CONFIGURA O SEU DOMÍNIO (NOVO)
+    # Substitui o placeholder pelo seu domínio real para a licença validar
+    "sed -i 's|<subdomain>.uazapi.dev|ia-uazapi.c9j1uy.easypanel.host|g' env.yml",
+    
+    # 3. AJUSTA PARA MODO SERVIDOR (NOVO)
+    # Muda de HTTPS para HTTP e porta 443 para 3000 (o Easypanel precisa disso)
+    "sed -i 's/TYPE: https/TYPE: http/g' env.yml",
+    "sed -i 's/PORT: 443/PORT: 3000/g' env.yml"
 ]
 
 [start]
-# Mostra o arquivo no log para conferirmos se a senha entrou e inicia
 cmd = "cat env.yml && npm run start"

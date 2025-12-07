@@ -2,15 +2,18 @@
 nixPkgs = ["nodejs_20", "ffmpeg", "git"]
 
 [phases.install]
-# 1. Copia o modelo
-# 2. Troca 'localhost' por 'evolution-api-redis' nas configs do Redis
-# 3. Troca a senha padrao pela sua senha do Redis
 cmds = [
     "npm install",
     "cp modelo-env.yml env.yml",
-    "sed -i 's/host: localhost/host: evolution-api-redis/g' env.yml",
+    # Substitui 'localhost' se existir
+    "sed -i 's/localhost/evolution-api-redis/g' env.yml",
+    # Substitui '127.0.0.1' (que é o que está causando o erro agora)
+    "sed -i 's/127.0.0.1/evolution-api-redis/g' env.yml",
+    # Coloca a senha correta onde estiver 'null'
     "sed -i 's/password: null/password: e2f8f84532ba2a14ac0d/g' env.yml"
 ]
 
 [start]
-cmd = "npm run start"
+# O comando cat vai mostrar o arquivo no log antes de iniciar
+# Assim, se der erro, saberemos exatamente como o arquivo ficou
+cmd = "cat env.yml && npm run start"

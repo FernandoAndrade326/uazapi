@@ -2,7 +2,9 @@
 nixPkgs = ["nodejs_20", "ffmpeg", "git"]
 
 [phases.install]
-cmds = ["npm install"]
+# Aqui está o segredo: instalamos o npm E copiamos o arquivo que falta
+cmds = ["npm install", "cp modelo-env.yml env.yml"]
 
 [start]
+# Voltamos para o comando original para o site rodar
 cmd = "npm run start"
